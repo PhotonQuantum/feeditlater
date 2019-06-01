@@ -53,9 +53,11 @@ class Downloader():
         body = self.body
         bs = BeautifulSoup(body, "lxml")
         for img in bs.findAll("img"):
-            src = img["src"]
-            fp, fn = self.__download__(urljoin(self.src_url, src))
-            self.img_downloaded.append(fn)
-            img["src"] = urljoin(self.url_prefix, fn)
-            # TODO del element if doesn't have src
+            try:
+                src = img["src"]
+                fp, fn = self.__download__(urljoin(self.src_url, src))
+                self.img_downloaded.append(fn)
+                img["src"] = urljoin(self.url_prefix, fn)
+            except KeyError:
+                img.decompose()
         self.parsed_body = str(bs)
